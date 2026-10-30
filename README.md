@@ -1,6 +1,6 @@
 # SAEKO ⇄ Odoo
 
-[![Odoo](https://img.shields.io/badge/Odoo-19.0-714B67)](https://github.com/odoo/odoo/tree/19.0)
+[![Odoo](https://img.shields.io/badge/Odoo-20.0-714B67)](https://github.com/odoo/odoo/tree/20.0)
 [![Python](https://img.shields.io/badge/Python-3.12%E2%80%933.14-3776AB)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%2B-4169E1)](https://www.postgresql.org/)
 [![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-blue)](https://www.gnu.org/licenses/lgpl-3.0)
@@ -23,10 +23,10 @@ profesores, facturas, pagos y nómina dentro de Odoo.
 
 | Rama | Odoo | Uso |
 |---|---|---|
-| `19.0` | 19.0 | Desarrollo activo |
-| `20.0` | 20.0 | Solo correcciones |
+| `20.0` | 20.0 | Desarrollo activo |
+| `19.0` | 19.0 | Solo correcciones |
 
-Los cambios nuevos entran primero en `19.0`. Una corrección que también aplique a 20 se lleva a
+Los cambios nuevos entran primero en `20.0`. Una corrección que también aplique a 19 se lleva a
 `19.0` con `git cherry-pick`.
 
 ## Cómo funciona
@@ -70,7 +70,7 @@ flowchart LR
 
 ## Requisitos
 
-* Odoo 19.0, Community o Enterprise.
+* Odoo 20.0, Community o Enterprise.
 * Python 3.12 a 3.14 y PostgreSQL 16 o superior.
 * Salida HTTPS del servidor de Odoo hacia los servidores de SAEKO.
 * Un *Service Account* de SAEKO (lo entrega su soporte) y un usuario de API creado en el Portal
@@ -83,7 +83,7 @@ Las dependencias de Python (`cryptography`, `requests`) ya vienen con Odoo.
 **Servidor propio**
 
 ```bash
-git clone -b 19.0 <url-del-repositorio> /opt/odoo/saeko
+git clone -b 20.0 <url-del-repositorio> /opt/odoo/saeko
 ```
 
 Agregue `/opt/odoo/saeko` al `addons_path` de su `odoo.conf` y luego:
@@ -94,7 +94,7 @@ odoo-bin -c odoo.conf -d <base> -i saeko_connector --stop-after-init
 
 **Odoo.sh**
 
-Conecte este repositorio al proyecto (o agréguelo como submódulo) y use la rama `19.0`. Odoo.sh
+Conecte este repositorio al proyecto (o agréguelo como submódulo) y use la rama `20.0`. Odoo.sh
 detecta los módulos de las carpetas de primer nivel; instale *SAEKO Connector* desde *Aplicaciones*.
 
 ## Primeros pasos
@@ -152,7 +152,7 @@ en [`saeko_connector/doc/ANALISIS_API.md`](saeko_connector/doc/ANALISIS_API.md).
 
 ## Contribuir
 
-* Trabaje en una rama a partir de la versión destino, por ejemplo `19.0-saeko-academic`.
+* Trabaje en una rama a partir de la versión destino, por ejemplo `20.0-saeko-academic`.
 * Use las etiquetas de commit de Odoo: `[ADD]` módulo nuevo, `[IMP]` mejora, `[FIX]` corrección,
   `[MIG]` migración de versión, `[REF]` refactor.
 * Todo cambio debe pasar las pruebas y traer las suyas.

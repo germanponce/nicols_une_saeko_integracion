@@ -4,8 +4,8 @@
     "summary": "Integración Odoo ↔ SAEKO (control escolar): conexión OAuth2/JWT, "
                "bitácora de API, datos crudos auditables y sincronización programada",
     "description": """
-SAEKO Connector — Fase 1 (Base)
-===============================
+SAEKO Connector — Fase 1 (Base) · Odoo 20
+=========================================
 * Configuración de backends SAEKO (Service Account OAuth2 JWT RS256).
 * Prueba de conexión y renovación automática de token.
 * Bitácora completa de cada llamada HTTP (request/response, tiempos, errores).
@@ -15,7 +15,7 @@ SAEKO Connector — Fase 1 (Base)
 * Crons: sincronización, renovación de token y depuración por retención.
 * Explorador de API (solo GET) para descubrir endpoints.
 """,
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Education",
     "author": "ANFEPI",
     "website": "https://www.anfepi.com",
@@ -24,7 +24,7 @@ SAEKO Connector — Fase 1 (Base)
     "external_dependencies": {"python": ["cryptography", "requests"]},
     "data": [
         "security/saeko_security.xml",
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/saeko_resource_data.xml",
         "data/ir_cron_data.xml",
         "views/saeko_backend_views.xml",

@@ -88,6 +88,10 @@ por ejemplo, un alumno inscrito en dos ciclos vigentes tiene un registro por cic
 
 ## Seguridad
 
+En Odoo 20 los permisos y las reglas de registro viven en un solo modelo, `ir.access`
+(`security/ir.access.csv`): una fila con grupo concede una operación (`r`, `cr`, `crud`…); una fila
+sin grupo y con dominio restringe a todos (así se expresa la regla multicompañía).
+
 | Grupo | Puede |
 |---|---|
 | SAEKO / Auditor - Consulta | Ver bitácora, ejecuciones, datos crudos, backends y catálogo |
