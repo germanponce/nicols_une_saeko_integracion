@@ -28,4 +28,25 @@
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- Multicompañía -->
+    <record id="rule_saeko_backend_company" model="ir.rule">
+        <field name="name">SAEKO backend: compañías permitidas</field>
+        <field name="model_id" ref="model_saeko_backend"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_saeko_log_company" model="ir.rule">
+        <field name="name">SAEKO bitácora: compañías permitidas</field>
+        <field name="model_id" ref="model_saeko_api_log"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_saeko_raw_company" model="ir.rule">
+        <field name="name">SAEKO crudo: compañías permitidas</field>
+        <field name="model_id" ref="model_saeko_raw_record"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_saeko_job_company" model="ir.rule">
+        <field name="name">SAEKO ejecuciones: compañías permitidas</field>
+        <field name="model_id" ref="model_saeko_sync_job"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>

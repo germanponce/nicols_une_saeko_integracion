@@ -1,17 +1,5 @@
 # Changelog
 
-## 20.0.1.0.0 — 2026-10-29
-
-Migración a Odoo 20.
-
-* Seguridad migrada a `ir.access` (`security/ir.access.csv`): Odoo 20 unifica `ir.model.access`
-  e `ir.rule`. Las reglas multicompañía son ahora restricciones sin grupo.
-* Script `migrations/20.0.1.0.0/pre-migrate.py`: libera los XML-ID de seguridad heredados.
-* 4 pruebas nuevas: permisos de Auditor y Administrador, acceso a secretos, multicompañía e
-  inmutabilidad de la bitácora (15 en total).
-* Documentación actualizada a Odoo 20: requisitos (Python 3.12–3.14, PostgreSQL 16+), reglas de
-  tiempo para la nómina docente, versiones de empleado.
-
 ## 19.0.1.0.0 — 2026-10-29
 
 Fase 1 — Base.

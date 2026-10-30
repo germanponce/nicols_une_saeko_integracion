@@ -174,7 +174,7 @@ class SaekoClient:
         return {
             "Accept": "application/json",
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": self.config.get("user_agent") or "Odoo-SAEKO-Connector/20.0",
+            "User-Agent": self.config.get("user_agent") or "Odoo-SAEKO-Connector/19.0",
             "X-Correlation-Id": self.correlation_id,
         }
 

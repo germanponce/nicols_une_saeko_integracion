@@ -1,10 +1,9 @@
-# SAEKO Connector para Odoo 20
+# SAEKO Connector para Odoo 19
 
-Integración **Odoo 20 (CE/EE) ← SAEKO** (sistema de control escolar universitario).
+Integración **Odoo 19 (CE/EE) ← SAEKO** (sistema de control escolar universitario).
 Odoo **consume** la API REST de SAEKO; todo lo que entra queda auditado.
 
 > Fase 1 — Base: conexión, autenticación, bitácora, datos crudos y crons.
-> Rama `20.0` (este código). La rama `19.0` conserva la versión para Odoo 19.
 > Las fases siguientes mapean los datos crudos a modelos estándar de Odoo.
 
 ## Qué incluye
@@ -52,7 +51,7 @@ python3 saeko_connector/tools/mock_saeko_server.py --port 8765
 * [doc/ARQUITECTURA.md](doc/ARQUITECTURA.md): diseño, flujo de autenticación, auditoría y motor de sincronización.
 * [doc/ANALISIS_API.md](doc/ANALISIS_API.md): **requerimiento por requerimiento vs. API pública de SAEKO** y preguntas para SAEKO.
 * [doc/INSTALACION.md](doc/INSTALACION.md): instalación, permisos, pruebas y operación.
-* [doc/ROADMAP.md](doc/ROADMAP.md): fases y mapeo propuesto a Odoo 20 EE.
+* [doc/ROADMAP.md](doc/ROADMAP.md): fases y mapeo propuesto a Odoo 19 EE.
 * [CHANGELOG.md](CHANGELOG.md)
 
 ## Pruebas
@@ -61,7 +60,7 @@ python3 saeko_connector/tools/mock_saeko_server.py --port 8765
 odoo-bin -d <db> -i saeko_connector --test-tags=/saeko_connector --stop-after-init
 ```
 
-15 pruebas: permisos y multicompañía (`ir.access`), inmutabilidad de la bitácora, firma JWT, conexión OK/rechazada, enmascarado de secretos, refresh ante 401,
+11 pruebas: firma JWT, conexión OK/rechazada, enmascarado de secretos, refresh ante 401,
 reintentos 5xx, paginación, detección de cambios/historial/ausentes, aislamiento de fallos por
 recurso, detalle por ID, cron por programación, importación de credenciales y explorador.
 
