@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_api_explorer_form" model="ir.ui.view">
+        <field name="name">saeko.api.explorer.form</field>
+        <field name="model">saeko.api.explorer</field>
+        <field name="arch" type="xml">
+            <form string="Explorador API SAEKO">
+                <div class="alert alert-info" role="alert">
+                    Solo lectura (GET). Cada llamada queda registrada en la bitácora.
+                    Úselo para validar endpoints nuevos antes de darlos de alta en el catálogo.
+                </div>
+                <group>
+                    <group>
+                        <field name="backend_id" readonly="1"/>
+                        <field name="resource_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="parent_value" placeholder="ID para {parent_id} o {id}"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="path"/>
+                    <field name="query" placeholder="include_fields=enrollments&amp;limit=5"/>
+                </group>
+                <group invisible="not correlation_id">
+                    <group>
+                        <field name="status_code"/>
+                        <field name="item_count"/>
+                    </group>
+                    <group>
+                        <field name="correlation_id"/>
+                    </group>
+                </group>
+                <notebook invisible="not correlation_id">
+                    <page string="Respuesta" name="response">
+                        <field name="response" widget="ace" options="{'mode': 'js'}"/>
+                    </page>
+                    <page string="Estructura detectada" name="keys">
+                        <field name="keys_summary" class="font-monospace"/>
+                    </page>
+                </notebook>
+                <footer>
+                    <button name="action_execute" type="object" string="Ejecutar GET"
+                            class="btn-primary" icon="fa-play"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

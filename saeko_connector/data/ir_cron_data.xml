@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Revisa cada 15 min qué recursos tienen su próxima ejecución vencida.
+             La frecuencia real de cada recurso se define en el backend. -->
+        <record id="ir_cron_saeko_sync" model="ir.cron">
+            <field name="name">SAEKO: Sincronización programada</field>
+            <field name="model_id" ref="model_saeko_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_sync()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="priority">10</field>
+        </record>
+
+        <record id="ir_cron_saeko_healthcheck" model="ir.cron">
+            <field name="name">SAEKO: Healthcheck y renovación de token</field>
+            <field name="model_id" ref="model_saeko_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_healthcheck()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="priority">8</field>
+        </record>
+
+        <record id="ir_cron_saeko_cleanup" model="ir.cron">
+            <field name="name">SAEKO: Depuración por retención</field>
+            <field name="model_id" ref="model_saeko_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_cleanup()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=17) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="priority">20</field>
+        </record>
+    </data>
+</odoo>

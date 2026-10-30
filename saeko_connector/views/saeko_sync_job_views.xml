@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_sync_job_list" model="ir.ui.view">
+        <field name="name">saeko.sync.job.list</field>
+        <field name="model">saeko.sync.job</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="state == 'failed'"
+                  decoration-warning="state == 'partial'" decoration-info="state == 'running'">
+                <field name="name"/>
+                <field name="backend_id"/>
+                <field name="trigger"/>
+                <field name="started_at"/>
+                <field name="duration_s" string="Segundos" optional="show"/>
+                <field name="fetched_count" sum="Total"/>
+                <field name="created_count" sum="Total"/>
+                <field name="updated_count" sum="Total"/>
+                <field name="unchanged_count" optional="show"/>
+                <field name="missing_count" optional="show"/>
+                <field name="error_count" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'partial'"
+                       decoration-danger="state == 'failed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_sync_job_form" model="ir.ui.view">
+        <field name="name">saeko.sync.job.form</field>
+        <field name="model">saeko.sync.job</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <header>
+                    <button name="action_rerun" type="object" string="Volver a ejecutar"
+                            icon="fa-repeat" invisible="state == 'running'"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_logs" type="object" class="oe_stat_button"
+                                icon="fa-list-alt">
+                            <field name="log_count" widget="statinfo" string="Llamadas API"/>
+                        </button>
+                        <button name="action_view_raw" type="object" class="oe_stat_button"
+                                icon="fa-database" string="Datos tocados"/>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="backend_id"/>
+                            <field name="trigger"/>
+                            <field name="user_id"/>
+                            <field name="correlation_id"/>
+                        </group>
+                        <group>
+                            <field name="started_at"/>
+                            <field name="finished_at"/>
+                            <field name="duration_s"/>
+                        </group>
+                        <group string="Contadores">
+                            <field name="fetched_count"/>
+                            <field name="created_count"/>
+                            <field name="updated_count"/>
+                            <field name="unchanged_count"/>
+                        </group>
+                        <group string=" ">
+                            <field name="missing_count"/>
+                            <field name="error_count"/>
+                            <field name="page_count"/>
+                            <field name="context_count"/>
+                        </group>
+                    </group>
+                    <field name="resource_ids" widget="many2many_tags"/>
+                    <separator string="Resultado por recurso"/>
+                    <field name="message" class="font-monospace"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_saeko_sync_job_search" model="ir.ui.view">
+        <field name="name">saeko.sync.job.search</field>
+        <field name="model">saeko.sync.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="backend_id"/>
+                <field name="correlation_id"/>
+                <filter name="failed" string="Con errores" domain="[('state', 'in', ('partial', 'failed'))]"/>
+                <filter name="cron" string="Programadas" domain="[('trigger', '=', 'cron')]"/>
+                <filter name="manual" string="Manuales" domain="[('trigger', '=', 'manual')]"/>
+                <filter name="started_at" string="Fecha" date="started_at"/>
+                <group>
+                    <filter name="group_backend" string="Backend" context="{'group_by': 'backend_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_saeko_sync_job" model="ir.actions.act_window">
+        <field name="name">Ejecuciones</field>
+        <field name="res_model">saeko.sync.job</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

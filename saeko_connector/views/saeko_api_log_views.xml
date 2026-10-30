@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_api_log_list" model="ir.ui.view">
+        <field name="name">saeko.api.log.list</field>
+        <field name="model">saeko.api.log</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" decoration-danger="not success">
+                <field name="create_date" string="Fecha"/>
+                <field name="backend_id" optional="show"/>
+                <field name="operation"/>
+                <field name="method"/>
+                <field name="endpoint"/>
+                <field name="status_code"/>
+                <field name="duration_ms" sum="Total"/>
+                <field name="response_size" optional="hide"/>
+                <field name="success" widget="boolean"/>
+                <field name="job_ref" optional="show"/>
+                <field name="correlation_id" optional="hide"/>
+                <field name="error_message" optional="show"/>
+                <field name="user_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_api_log_form" model="ir.ui.view">
+        <field name="name">saeko.api.log.form</field>
+        <field name="model">saeko.api.log</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <header>
+                    <button name="action_open_job" type="object" string="Ver ejecución"
+                            invisible="not job_ref"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h2><field name="display_label"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="backend_id"/>
+                            <field name="operation"/>
+                            <field name="method"/>
+                            <field name="url"/>
+                            <field name="status_code"/>
+                            <field name="success"/>
+                        </group>
+                        <group>
+                            <field name="create_date" string="Fecha"/>
+                            <field name="duration_ms"/>
+                            <field name="response_size"/>
+                            <field name="job_ref"/>
+                            <field name="correlation_id"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-danger" role="status" invisible="not error_message">
+                        <field name="error_message"/>
+                    </div>
+                    <notebook>
+                        <page string="Respuesta" name="response">
+                            <field name="response_body" widget="ace" options="{'mode': 'js'}"/>
+                        </page>
+                        <page string="Request" name="request">
+                            <group string="Parámetros"><field name="params" nolabel="1" colspan="2" widget="ace" options="{'mode': 'js'}"/></group>
+                            <group string="Cuerpo (enmascarado)"><field name="request_body" nolabel="1" colspan="2" widget="ace" options="{'mode': 'js'}"/></group>
+                            <group string="Headers (enmascarados)"><field name="request_headers" nolabel="1" colspan="2" widget="ace" options="{'mode': 'js'}"/></group>
+                        </page>
+                        <page string="Headers de respuesta" name="resp_headers">
+                            <field name="response_headers" widget="ace" options="{'mode': 'js'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_saeko_api_log_search" model="ir.ui.view">
+        <field name="name">saeko.api.log.search</field>
+        <field name="model">saeko.api.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="endpoint"/>
+                <field name="correlation_id"/>
+                <field name="job_ref"/>
+                <field name="backend_id"/>
+                <field name="status_code"/>
+                <field name="error_message"/>
+                <filter name="errors" string="Errores" domain="[('success', '=', False)]"/>
+                <filter name="ok" string="Exitosas" domain="[('success', '=', True)]"/>
+                <separator/>
+                <filter name="auth" string="Autenticación" domain="[('operation', 'in', ('auth', 'refresh'))]"/>
+                <filter name="slow" string="Lentas (&gt; 5 s)" domain="[('duration_ms', '>', 5000)]"/>
+                <separator/>
+                <filter name="today" string="Hoy" domain="[('create_date', '>=', 'today')]"/>
+                <filter name="create_date" string="Fecha" date="create_date"/>
+                <group>
+                    <filter name="group_backend" string="Backend" context="{'group_by': 'backend_id'}"/>
+                    <filter name="group_operation" string="Operación" context="{'group_by': 'operation'}"/>
+                    <filter name="group_status" string="HTTP" context="{'group_by': 'status_code'}"/>
+                    <filter name="group_endpoint" string="Endpoint" context="{'group_by': 'endpoint'}"/>
+                    <filter name="group_day" string="Día" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_saeko_api_log_graph" model="ir.ui.view">
+        <field name="name">saeko.api.log.graph</field>
+        <field name="model">saeko.api.log</field>
+        <field name="arch" type="xml">
+            <graph string="Llamadas API" type="line">
+                <field name="create_date" interval="day"/>
+                <field name="success"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_saeko_api_log_pivot" model="ir.ui.view">
+        <field name="name">saeko.api.log.pivot</field>
+        <field name="model">saeko.api.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Bitácora API">
+                <field name="endpoint" type="row"/>
+                <field name="status_code" type="col"/>
+                <field name="duration_ms" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_saeko_api_log" model="ir.actions.act_window">
+        <field name="name">Bitácora API</field>
+        <field name="res_model">saeko.api.log</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="context">{'search_default_today': 1}</field>
+    </record>
+</odoo>

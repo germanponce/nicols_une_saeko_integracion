@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_saeko_sync_job" model="ir.sequence">
+            <field name="name">SAEKO - Ejecuciones</field>
+            <field name="code">saeko.sync.job</field>
+            <field name="prefix">SAEKO/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- ============================================================
+             FASE 1: recursos documentados en https://apidoc.saeko.io
+             (solo lectura → aterrizaje crudo). El orden importa: los
+             padres se ejecutan antes que sus hijos.
+             ============================================================ -->
+        <record id="resource_school" model="saeko.resource">
+            <field name="sequence">10</field>
+            <field name="code">school</field>
+            <field name="name">Planteles (School)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/schools</field>
+            <field name="name_fields">name</field>
+            <field name="default_interval_type">days</field>
+            <field name="target_model">saeko.school / res.company / analytic</field>
+            <field name="requirement_ids">Plantel (profesores y alumnos)</field>
+        </record>
+
+        <record id="resource_term" model="saeko.resource">
+            <field name="sequence">20</field>
+            <field name="code">term</field>
+            <field name="name">Ciclos escolares (Term)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/schools/{parent_id}/terms</field>
+            <field name="parent_id" ref="resource_school"/>
+            <field name="name_fields">name,begins_at,ends_at</field>
+            <field name="target_model">saeko.term</field>
+            <field name="requirement_ids">Ciclo escolar</field>
+        </record>
+
+        <record id="resource_program" model="saeko.resource">
+            <field name="sequence">30</field>
+            <field name="code">program</field>
+            <field name="name">Programas (Program)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/schools/{parent_id}/programs</field>
+            <field name="parent_id" ref="resource_school"/>
+            <field name="name_fields">name,plan</field>
+            <field name="target_model">saeko.program</field>
+            <field name="requirement_ids">Programa, Nivel (program.level)</field>
+        </record>
+
+        <record id="resource_group" model="saeko.resource">
+            <field name="sequence">40</field>
+            <field name="code">group</field>
+            <field name="name">Grupos del ciclo vigente (Group)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/terms/{parent_id}/groups</field>
+            <field name="parent_id" ref="resource_term"/>
+            <field name="parent_filter">is_current=true</field>
+            <field name="target_model">saeko.group</field>
+            <field name="requirement_ids">Modalidad/turno (group.shift)</field>
+        </record>
+
+        <record id="resource_course" model="saeko.resource">
+            <field name="sequence">50</field>
+            <field name="code">course</field>
+            <field name="name">Cursos del ciclo vigente (Course)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/terms/{parent_id}/courses</field>
+            <field name="parent_id" ref="resource_term"/>
+            <field name="parent_filter">is_current=true</field>
+            <field name="paginate" eval="True"/>
+            <field name="page_size">100</field>
+            <field name="name_fields">room,subject_id,professor_id</field>
+            <field name="target_model">saeko.course</field>
+            <field name="requirement_ids">Carga horaria del profesor (profesor ↔ materia ↔ grupo)</field>
+        </record>
+
+        <record id="resource_subject" model="saeko.resource">
+            <field name="sequence">60</field>
+            <field name="code">subject</field>
+            <field name="name">Materias (Subject)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/programs/{parent_id}/subjects</field>
+            <field name="parent_id" ref="resource_program"/>
+            <field name="name_fields">code,name</field>
+            <field name="default_interval_type">weeks</field>
+            <field name="target_model">saeko.subject</field>
+            <field name="requirement_ids">Carga horaria (horas/créditos por materia)</field>
+        </record>
+
+        <record id="resource_student" model="saeko.resource">
+            <field name="sequence">70</field>
+            <field name="code">student</field>
+            <field name="name">Alumnos activos del ciclo vigente (Student)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/terms/{parent_id}/students</field>
+            <field name="parent_id" ref="resource_term"/>
+            <field name="parent_filter">is_current=true</field>
+            <field name="include_fields">curp,enrollment_id</field>
+            <field name="name_fields">student_id,name,surnames</field>
+            <field name="detail_path">/api/v1/core/students/{id}</field>
+            <field name="detail_include_fields">enrollments,addresses,custom_fields,phones,curp,rfc</field>
+            <field name="target_model">res.partner (alumno)</field>
+            <field name="requirement_ids">Alumnos: contacto, estatus, plantel, nivel, programa</field>
+        </record>
+
+        <record id="resource_employee" model="saeko.resource">
+            <field name="sequence">80</field>
+            <field name="code">employee</field>
+            <field name="name">Empleados / Profesores (Employee)</field>
+            <field name="namespace">core</field>
+            <field name="path">/api/v1/core/schools/{parent_id}/employees</field>
+            <field name="parent_id" ref="resource_school"/>
+            <field name="name_fields">name,first_surname,second_surname</field>
+            <field name="detail_path">/api/v1/core/employees/{id}</field>
+            <field name="target_model">hr.employee / res.partner (profesor)</field>
+            <field name="requirement_ids">Profesores: nombre, CURP, RFC, grado de estudios, tarifa (cost_per_hour)</field>
+        </record>
+
+        <record id="resource_scholarship_type" model="saeko.resource">
+            <field name="sequence">90</field>
+            <field name="code">scholarship_type</field>
+            <field name="name">Tipos de beca (ScholarshipType)</field>
+            <field name="namespace">accounting</field>
+            <field name="path">/api/v1/accounting/scholarship_types</field>
+            <field name="name_fields">name</field>
+            <field name="default_interval_type">weeks</field>
+            <field name="target_model">saeko.scholarship.type</field>
+            <field name="requirement_ids">Becas (catálogo)</field>
+        </record>
+
+        <record id="resource_ad_campaign" model="saeko.resource">
+            <field name="sequence">100</field>
+            <field name="code">ad_campaign</field>
+            <field name="name">Campañas de admisión (AdCampaign)</field>
+            <field name="namespace">admissions</field>
+            <field name="path">/api/v1/admissions/ad_campaigns</field>
+            <field name="name_fields">name</field>
+            <field name="default_interval_type">weeks</field>
+            <field name="target_model">utm.campaign</field>
+        </record>
+
+        <record id="resource_country" model="saeko.resource">
+            <field name="sequence">110</field>
+            <field name="code">country</field>
+            <field name="name">Países (Country)</field>
+            <field name="namespace">location</field>
+            <field name="path">/api/v1/location/countries</field>
+            <field name="name_fields">name</field>
+            <field name="default_interval_type">weeks</field>
+            <field name="description">La documentación muestra la ruta /location/countries (sin /api/v1). Si responde 404, ajuste la ruta.</field>
+            <field name="target_model">res.country</field>
+        </record>
+
+        <!-- ============================================================
+             FASE 3: requerimientos SIN endpoint en la documentación
+             pública. Se dejan archivados como recordatorio; cuando SAEKO
+             entregue la ruta, se captura aquí y se activa.
+             ============================================================ -->
+        <record id="resource_charge" model="saeko.resource">
+            <field name="sequence">500</field>
+            <field name="code">charge</field>
+            <field name="name">[PENDIENTE] Cargos / conceptos por alumno</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/accounting/PENDIENTE/charges</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Concepto pagado, monto, fechas del concepto, adeudo</field>
+        </record>
+        <record id="resource_payment" model="saeko.resource">
+            <field name="sequence">510</field>
+            <field name="code">payment</field>
+            <field name="name">[PENDIENTE] Pagos</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/accounting/PENDIENTE/payments</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Fecha de pago, forma de pago, método de pago</field>
+        </record>
+        <record id="resource_invoice" model="saeko.resource">
+            <field name="sequence">520</field>
+            <field name="code">invoice</field>
+            <field name="name">[PENDIENTE] Facturas / CFDI</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/accounting/PENDIENTE/invoices</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Factura individual o global, CFDI por concepto</field>
+        </record>
+        <record id="resource_condonation" model="saeko.resource">
+            <field name="sequence">530</field>
+            <field name="code">condonation</field>
+            <field name="name">[PENDIENTE] Condonaciones / descuentos</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/accounting/PENDIENTE/condonations</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Condonaciones</field>
+        </record>
+        <record id="resource_teacher_attendance" model="saeko.resource">
+            <field name="sequence">540</field>
+            <field name="code">teacher_attendance</field>
+            <field name="name">[PENDIENTE] Asistencia / checador de profesores</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/scheduling/PENDIENTE/gate_access_logs</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="description">La API documenta GateAccessLog solo para CREAR (POST). Se requiere un GET de consulta.</field>
+            <field name="requirement_ids">Registros de asistencia y checador, carga dada</field>
+        </record>
+        <record id="resource_teacher_schedule" model="saeko.resource">
+            <field name="sequence">550</field>
+            <field name="code">teacher_schedule</field>
+            <field name="name">[PENDIENTE] Horario del profesor</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/scheduling/PENDIENTE/schedules</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Carga horaria: horario, modalidad</field>
+        </record>
+        <record id="resource_teacher_incident" model="saeko.resource">
+            <field name="sequence">560</field>
+            <field name="code">teacher_incident</field>
+            <field name="name">[PENDIENTE] Incidencias / suplencias / bonos</field>
+            <field name="namespace">custom</field>
+            <field name="path">/api/v1/PENDIENTE/incidents</field>
+            <field name="phase">3</field>
+            <field name="active" eval="False"/>
+            <field name="requirement_ids">Incidencias por suplencia, documentación de incidencias, bonos</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_resource_list" model="ir.ui.view">
+        <field name="name">saeko.resource.list</field>
+        <field name="model">saeko.resource</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="phase == '3'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="namespace"/>
+                <field name="path"/>
+                <field name="parent_id"/>
+                <field name="paginate" optional="show"/>
+                <field name="fetch_detail" optional="show"/>
+                <field name="phase" widget="badge"
+                       decoration-success="phase == '1'" decoration-info="phase == '2'"
+                       decoration-warning="phase == '3'"/>
+                <field name="requirement_ids" optional="show"/>
+                <field name="raw_count" string="Crudos"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_resource_form" model="ir.ui.view">
+        <field name="name">saeko.resource.form</field>
+        <field name="model">saeko.resource</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_raw" type="object" class="oe_stat_button"
+                                icon="fa-database">
+                            <field name="raw_count" widget="statinfo" string="Datos crudos"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                        <field name="code" placeholder="código técnico"/>
+                    </div>
+                    <group>
+                        <group string="Extracción">
+                            <field name="namespace"/>
+                            <field name="path"/>
+                            <field name="parent_id"/>
+                            <field name="parent_filter" invisible="not parent_id"/>
+                            <field name="extra_params"/>
+                            <field name="include_fields"/>
+                            <field name="response_key"/>
+                            <field name="id_field"/>
+                            <field name="name_fields"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Paginación y detalle">
+                            <field name="paginate"/>
+                            <field name="page_size" invisible="not paginate"/>
+                            <field name="sort_by" invisible="not paginate"/>
+                            <field name="fetch_detail"/>
+                            <field name="detail_path" invisible="not fetch_detail and not detail_path"/>
+                            <field name="detail_include_fields" invisible="not fetch_detail"/>
+                            <field name="track_missing"/>
+                        </group>
+                        <group string="Programación por defecto">
+                            <field name="default_interval_number"/>
+                            <field name="default_interval_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Planeación">
+                            <field name="phase"/>
+                            <field name="target_model"/>
+                            <field name="requirement_ids"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Notas técnicas del endpoint..."/>
+                    <field name="child_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="path"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_saeko_resource_search" model="ir.ui.view">
+        <field name="name">saeko.resource.search</field>
+        <field name="model">saeko.resource</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="path"/>
+                <filter name="pending" string="Pendientes de endpoint (Fase 3)"
+                        domain="[('phase', '=', '3')]" context="{'active_test': False}"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_namespace" string="Namespace" context="{'group_by': 'namespace'}"/>
+                    <filter name="group_phase" string="Fase" context="{'group_by': 'phase'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_saeko_resource" model="ir.actions.act_window">
+        <field name="name">Catálogo de recursos</field>
+        <field name="res_model">saeko.resource</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

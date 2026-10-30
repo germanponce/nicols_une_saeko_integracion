@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_saeko_root" name="SAEKO" sequence="85"
+              web_icon="saeko_connector,static/description/icon.png"
+              groups="saeko_connector.group_saeko_user"/>
+
+    <menuitem id="menu_saeko_operations" name="Operación" parent="menu_saeko_root" sequence="10"/>
+    <menuitem id="menu_saeko_jobs" name="Ejecuciones" parent="menu_saeko_operations"
+              action="action_saeko_sync_job" sequence="10"/>
+    <menuitem id="menu_saeko_raw" name="Datos crudos" parent="menu_saeko_operations"
+              action="action_saeko_raw_record" sequence="20"/>
+
+    <menuitem id="menu_saeko_audit" name="Auditoría" parent="menu_saeko_root" sequence="20"/>
+    <menuitem id="menu_saeko_logs" name="Bitácora API" parent="menu_saeko_audit"
+              action="action_saeko_api_log" sequence="10"/>
+
+    <menuitem id="menu_saeko_config" name="Configuración" parent="menu_saeko_root" sequence="90"
+              groups="saeko_connector.group_saeko_manager"/>
+    <menuitem id="menu_saeko_backends" name="Conexiones" parent="menu_saeko_config"
+              action="action_saeko_backend" sequence="10"/>
+    <menuitem id="menu_saeko_resources" name="Catálogo de recursos" parent="menu_saeko_config"
+              action="action_saeko_resource" sequence="20"/>
+    <menuitem id="menu_saeko_crons" name="Tareas programadas" parent="menu_saeko_config"
+              action="base.ir_cron_act" sequence="30" groups="base.group_system"/>
+</odoo>

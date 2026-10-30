@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_saeko" model="ir.module.category">
+        <field name="name">SAEKO</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="res_groups_privilege_saeko" model="res.groups.privilege">
+        <field name="name">SAEKO Connector</field>
+        <field name="sequence">60</field>
+        <field name="category_id" ref="module_category_saeko"/>
+    </record>
+
+    <record id="group_saeko_user" model="res.groups">
+        <field name="name">Auditor / Consulta</field>
+        <field name="sequence">10</field>
+        <field name="comment">Consulta bitácora, ejecuciones y datos crudos de SAEKO.</field>
+        <field name="privilege_id" ref="res_groups_privilege_saeko"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_saeko_manager" model="res.groups">
+        <field name="name">Administrador</field>
+        <field name="sequence">20</field>
+        <field name="comment">Configura backends y recursos, prueba conexión y ejecuta sincronizaciones.</field>
+        <field name="privilege_id" ref="res_groups_privilege_saeko"/>
+        <field name="implied_ids" eval="[(4, ref('group_saeko_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,82 @@
+<section class="oe_container">
+    <div class="oe_row oe_spaced" style="max-width: 1100px; margin: 0 auto;">
+        <div style="text-align: center; padding: 24px 12px;">
+            <img src="icon.png" alt="SAEKO Connector" style="width: 96px; height: 96px;"/>
+            <h1 style="color: #0e5e78; font-weight: 700; margin-top: 16px;">SAEKO Connector</h1>
+            <h3 style="color: #4a5a66; font-weight: 400;">
+                Integración Odoo 20 ⇄ SAEKO para universidades: conexión segura, bitácora completa
+                y datos crudos auditables.
+            </h3>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container" style="background: #f4f8fa; padding: 24px 0;">
+    <div class="oe_row" style="max-width: 1100px; margin: 0 auto;">
+        <div class="row">
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">🔐 Conexión OAuth2 / JWT</h4>
+                <p>Service Account con llave RSA (RS256), delegación en un usuario del dominio,
+                   renovación automática del token y prueba de conexión paso a paso. Importe el
+                   bloque <code>service_account</code> tal como lo entrega SAEKO.</p>
+            </div>
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">📜 Bitácora inmutable</h4>
+                <p>Cada llamada HTTP: URL, parámetros, cuerpos y headers con secretos enmascarados,
+                   código, duración y error. Se escribe aparte de la transacción: sobrevive a fallos
+                   y rollbacks.</p>
+            </div>
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">🗄️ Datos crudos versionados</h4>
+                <p>El JSON tal como llegó, con huella SHA-256, versión, historial de cambios y
+                   detección de registros que dejaron de existir en SAEKO.</p>
+            </div>
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">⏱️ Crons programables</h4>
+                <p>Frecuencia por recurso (planteles, ciclos, programas, grupos, cursos, alumnos,
+                   profesores, becas…), healthcheck del token, aviso de vencimiento de la llave y
+                   depuración por retención.</p>
+            </div>
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">🧩 Endpoints como datos</h4>
+                <p>Rutas, dependencias padre→hijo, paginación y detalle por ID se configuran desde
+                   la interfaz. Un endpoint nuevo de SAEKO no requiere programar.</p>
+            </div>
+            <div class="col-md-4" style="padding: 12px;">
+                <h4 style="color: #0e5e78;">🔎 Explorador API</h4>
+                <p>Lance consultas GET de solo lectura, vea la respuesta y la estructura de campos
+                   detectada antes de dar de alta un recurso.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container" style="padding: 24px 0;">
+    <div class="oe_row" style="max-width: 1100px; margin: 0 auto;">
+        <h3 style="color: #0e5e78;">Cómo empezar</h3>
+        <ol>
+            <li><b>SAEKO → Configuración → Conexiones → Nuevo.</b></li>
+            <li><b>Importar Service Account</b> e indicar el correo del usuario delegado.</li>
+            <li><b>Probar conexión.</b></li>
+            <li>En <i>Recursos y programación</i>, ejecutar ▶ cada recurso y revisar
+                <i>Datos crudos</i>.</li>
+            <li>Activar <b>Sincronización automática</b>.</li>
+        </ol>
+        <h3 style="color: #0e5e78; margin-top: 24px;">Fases</h3>
+        <table class="table table-sm table-bordered" style="max-width: 900px;">
+            <thead style="background: #0e5e78; color: white;">
+                <tr><th>Fase</th><th>Alcance</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Conexión, bitácora, datos crudos, crons</td><td>✅ Este módulo</td></tr>
+                <tr><td>2</td><td>Mapeo académico: alumnos, profesores, programas, becas</td><td>Planeado</td></tr>
+                <tr><td>3</td><td>Cargos, pagos, CFDI, adeudos, condonaciones</td><td>Requiere endpoints SAEKO</td></tr>
+                <tr><td>4</td><td>Nómina docente: carga dada, asistencias, suplencias, bonos</td><td>Requiere endpoints SAEKO</td></tr>
+            </tbody>
+        </table>
+        <p style="color: #6b7a86; margin-top: 16px;">
+            Compatible con Odoo 20 Community y Enterprise · Depende de <code>base</code> y
+            <code>mail</code> · Desarrollado por ANFEPI
+        </p>
+    </div>
+</section>

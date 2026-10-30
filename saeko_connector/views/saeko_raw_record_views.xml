@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_raw_record_list" model="ir.ui.view">
+        <field name="name">saeko.raw.record.list</field>
+        <field name="model">saeko.raw.record</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-muted="missing" decoration-danger="state == 'error'">
+                <field name="backend_id" optional="hide"/>
+                <field name="resource_id"/>
+                <field name="saeko_id"/>
+                <field name="name"/>
+                <field name="context_key" optional="show"/>
+                <field name="version"/>
+                <field name="change_type" widget="badge"
+                       decoration-success="change_type == 'new'"
+                       decoration-warning="change_type == 'updated'"/>
+                <field name="last_seen"/>
+                <field name="last_changed" optional="hide"/>
+                <field name="missing" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'pending'"
+                       decoration-success="state == 'processed'"
+                       decoration-danger="state == 'error'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_raw_record_form" model="ir.ui.view">
+        <field name="name">saeko.raw.record.form</field>
+        <field name="model">saeko.raw.record</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_reset_pending" type="object" string="Marcar pendiente"
+                            invisible="state == 'pending'"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <button name="action_ignore" type="object" string="Ignorar"
+                            invisible="state == 'ignored'"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_history" type="object" class="oe_stat_button"
+                                icon="fa-history">
+                            <field name="history_count" widget="statinfo" string="Versiones previas"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Ausente en SAEKO" bg_color="text-bg-warning"
+                            invisible="not missing"/>
+                    <div class="oe_title">
+                        <h2><field name="name" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="backend_id" readonly="1"/>
+                            <field name="resource_id" readonly="1"/>
+                            <field name="saeko_id" readonly="1"/>
+                            <field name="context_key" readonly="1"/>
+                            <field name="parent_raw_id" readonly="1"/>
+                            <field name="odoo_model" readonly="1"/>
+                            <field name="odoo_res_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="version" readonly="1"/>
+                            <field name="change_type" readonly="1"/>
+                            <field name="first_seen" readonly="1"/>
+                            <field name="last_seen" readonly="1"/>
+                            <field name="last_changed" readonly="1"/>
+                            <field name="missing_since" readonly="1" invisible="not missing"/>
+                            <field name="last_job_id" readonly="1"/>
+                            <field name="payload_hash" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="status" invisible="not process_message">
+                        <field name="process_message" readonly="1"/>
+                    </div>
+                    <notebook>
+                        <page string="JSON" name="json">
+                            <field name="payload" widget="ace" options="{'mode': 'js'}" readonly="1"/>
+                        </page>
+                        <page string="Historial" name="history">
+                            <field name="history_ids" readonly="1">
+                                <list>
+                                    <field name="version"/>
+                                    <field name="captured_at"/>
+                                    <field name="replaced_at"/>
+                                    <field name="job_id"/>
+                                    <field name="payload_hash"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_saeko_raw_record_search" model="ir.ui.view">
+        <field name="name">saeko.raw.record.search</field>
+        <field name="model">saeko.raw.record</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="saeko_id"/>
+                <field name="payload" string="Contenido JSON"/>
+                <field name="resource_id"/>
+                <field name="backend_id"/>
+                <field name="context_key"/>
+                <filter name="pending" string="Pendientes" domain="[('state', '=', 'pending')]"/>
+                <filter name="error" string="Con error" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter name="new" string="Nuevos (última corrida)" domain="[('change_type', '=', 'new')]"/>
+                <filter name="updated" string="Modificados (última corrida)" domain="[('change_type', '=', 'updated')]"/>
+                <filter name="missing" string="Ausentes en SAEKO" domain="[('missing', '=', True)]"/>
+                <group>
+                    <filter name="group_resource" string="Recurso" context="{'group_by': 'resource_id'}"/>
+                    <filter name="group_backend" string="Backend" context="{'group_by': 'backend_id'}"/>
+                    <filter name="group_context" string="Contexto" context="{'group_by': 'context_key'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_saeko_raw_record" model="ir.actions.act_window">
+        <field name="name">Datos crudos</field>
+        <field name="res_model">saeko.raw.record</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_resource': 1}</field>
+    </record>
+
+    <record id="view_saeko_raw_history_list" model="ir.ui.view">
+        <field name="name">saeko.raw.history.list</field>
+        <field name="model">saeko.raw.history</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="raw_id"/>
+                <field name="resource_id"/>
+                <field name="saeko_id"/>
+                <field name="version"/>
+                <field name="captured_at"/>
+                <field name="replaced_at"/>
+                <field name="job_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_raw_history_form" model="ir.ui.view">
+        <field name="name">saeko.raw.history.form</field>
+        <field name="model">saeko.raw.history</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="raw_id"/>
+                            <field name="version"/>
+                            <field name="payload_hash"/>
+                        </group>
+                        <group>
+                            <field name="captured_at"/>
+                            <field name="replaced_at"/>
+                            <field name="job_id"/>
+                        </group>
+                    </group>
+                    <field name="payload" widget="ace" options="{'mode': 'js'}"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

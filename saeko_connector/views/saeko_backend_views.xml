@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_saeko_backend_list" model="ir.ui.view">
+        <field name="name">saeko.backend.list</field>
+        <field name="model">saeko.backend</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="environment" widget="badge"
+                       decoration-warning="environment == 'sandbox'"
+                       decoration-info="environment == 'production'"/>
+                <field name="api_url"/>
+                <field name="user_email"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="sync_enabled" widget="boolean_toggle"/>
+                <field name="last_connection_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'connected'"
+                       decoration-danger="state == 'error'"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saeko_backend_form" model="ir.ui.view">
+        <field name="name">saeko.backend.form</field>
+        <field name="model">saeko.backend</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_test_connection" type="object" string="Probar conexión"
+                            class="btn-primary" icon="fa-plug"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <button name="action_sync_all" type="object" string="Sincronizar ahora"
+                            icon="fa-refresh" invisible="state != 'connected'"
+                            groups="saeko_connector.group_saeko_manager"
+                            confirm="Se descargarán todos los recursos activos. ¿Continuar?"/>
+                    <button name="action_open_explorer" type="object" string="Explorador API"
+                            icon="fa-search" groups="saeko_connector.group_saeko_manager"/>
+                    <button name="action_refresh_token" type="object" string="Renovar token"
+                            icon="fa-key" invisible="state == 'draft'"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <button name="action_revoke_token" type="object" string="Descartar token"
+                            invisible="token_status == 'none'"
+                            groups="saeko_connector.group_saeko_manager"/>
+                    <button name="action_import_credentials" type="object"
+                            string="Importar Service Account" icon="fa-upload"
+                            groups="base.group_system"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_jobs" type="object" class="oe_stat_button"
+                                icon="fa-tasks">
+                            <field name="job_count" widget="statinfo" string="Ejecuciones"/>
+                        </button>
+                        <button name="action_view_raw" type="object" class="oe_stat_button"
+                                icon="fa-database">
+                            <field name="raw_count" widget="statinfo" string="Datos crudos"/>
+                        </button>
+                        <button name="action_view_logs" type="object" class="oe_stat_button"
+                                icon="fa-list-alt">
+                            <field name="log_count" widget="statinfo" string="Bitácora"/>
+                        </button>
+                        <button name="action_view_error_logs" type="object" class="oe_stat_button"
+                                icon="fa-exclamation-triangle">
+                            <field name="error_log_count" widget="statinfo" string="Errores"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <widget name="web_ribbon" title="Producción" bg_color="text-bg-info"
+                            invisible="not active or environment != 'production'"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. SAEKO Universidad - Producción"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="environment" widget="radio" options="{'horizontal': true}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="sync_enabled" widget="boolean_toggle"/>
+                            <field name="last_connection_date"/>
+                            <field name="token_status" widget="badge"
+                                   decoration-success="token_status == 'valid'"
+                                   decoration-warning="token_status == 'expired'"/>
+                            <field name="token_expires_at" invisible="token_status == 'none'"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-danger" role="alert" invisible="not last_error">
+                        <strong>Último error:</strong>
+                        <field name="last_error" nolabel="1" class="d-block"/>
+                    </div>
+                    <notebook>
+                        <page string="Service Account" name="credentials">
+                            <group>
+                                <group string="Servidores">
+                                    <field name="auth_url" placeholder="https://.../oauth/token"/>
+                                    <field name="api_url" placeholder="https://..."/>
+                                    <field name="scope"/>
+                                </group>
+                                <group string="Delegación de autoridad">
+                                    <field name="user_email" widget="email"/>
+                                    <field name="client_id"/>
+                                    <field name="private_key_id"/>
+                                    <field name="key_expires_at"/>
+                                    <field name="key_fingerprint"/>
+                                </group>
+                            </group>
+                            <group string="Llave privada RSA" groups="base.group_system">
+                                <field name="private_key" nolabel="1" colspan="2" password="True"
+                                       placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----"/>
+                            </group>
+                            <div class="text-muted small">
+                                La llave nunca se escribe en la bitácora; los tokens se guardan
+                                aparte y solo los ve Administración. Use “Importar Service Account”
+                                para pegar el bloque YAML que entrega soporte SAEKO.
+                            </div>
+                        </page>
+                        <page string="Recursos y programación" name="resources">
+                            <div class="mb-2">
+                                <button name="action_reload_resources" type="object"
+                                        string="Agregar recursos nuevos del catálogo"
+                                        class="btn-link" icon="fa-plus"
+                                        groups="saeko_connector.group_saeko_manager"/>
+                            </div>
+                            <field name="resource_line_ids">
+                                <list editable="bottom" create="0"
+                                      decoration-danger="last_state == 'error'"
+                                      decoration-muted="not scheduled">
+                                    <field name="sequence" column_invisible="1"/>
+                                    <field name="resource_id" readonly="1"/>
+                                    <field name="parent_resource_id" optional="show"/>
+                                    <field name="namespace" optional="hide"/>
+                                    <field name="scheduled" widget="boolean_toggle"/>
+                                    <field name="interval_number"/>
+                                    <field name="interval_type"/>
+                                    <field name="next_run"/>
+                                    <field name="last_run"/>
+                                    <field name="last_state" widget="badge"
+                                           decoration-success="last_state == 'ok'"
+                                           decoration-danger="last_state == 'error'"/>
+                                    <field name="raw_count" string="Crudos"/>
+                                    <field name="last_message" optional="hide"/>
+                                    <button name="action_sync_now" type="object" icon="fa-play"
+                                            title="Sincronizar este recurso"
+                                            groups="saeko_connector.group_saeko_manager"/>
+                                    <button name="action_view_raw" type="object" icon="fa-database"
+                                            title="Ver datos crudos"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="HTTP" name="http">
+                            <group>
+                                <group>
+                                    <field name="timeout"/>
+                                    <field name="max_retries"/>
+                                    <field name="backoff"/>
+                                </group>
+                                <group>
+                                    <field name="page_size"/>
+                                    <field name="verify_ssl"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Auditoría" name="audit">
+                            <group>
+                                <group string="Bitácora">
+                                    <field name="log_level"/>
+                                    <field name="log_response_body"/>
+                                </group>
+                                <group string="Retención (0 = siempre)">
+                                    <field name="log_retention_days"/>
+                                    <field name="job_retention_days"/>
+                                    <field name="history_retention_days"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Última prueba" name="last_test">
+                            <field name="last_test_result" nolabel="1" class="font-monospace"/>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_saeko_backend_search" model="ir.ui.view">
+        <field name="name">saeko.backend.search</field>
+        <field name="model">saeko.backend</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="api_url"/>
+                <filter name="connected" string="Conectados" domain="[('state', '=', 'connected')]"/>
+                <filter name="error" string="Con error" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_saeko_backend" model="ir.actions.act_window">
+        <field name="name">Conexiones SAEKO</field>
+        <field name="res_model">saeko.backend</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure su primera conexión a SAEKO</p>
+            <p>Capture el Service Account que entrega soporte SAEKO, el correo del usuario
+               delegado y presione <b>Probar conexión</b>.</p>
+        </field>
+    </record>
+</odoo>
