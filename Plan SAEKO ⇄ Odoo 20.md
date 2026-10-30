@@ -1,6 +1,6 @@
 # Plan SAEKO ⇄ Odoo 20
 
-Oct 29, 2026 · @German Ponce
+Integración Versión Enterprise
 
 ## Resumen Ejecutivo
 
