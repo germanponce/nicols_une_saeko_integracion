@@ -2,9 +2,7 @@
 
 ## Requisitos
 
-* Odoo 20.0 (Community o Enterprise). Depende solo de `base` y `mail`.
-* Python 3.12 a 3.14 y PostgreSQL 16 o superior (requisitos de Odoo 20).
-* La rama `19.0` del repositorio conserva la versión para Odoo 19.
+* Odoo 19.0 (Community o Enterprise). Depende solo de `base` y `mail`.
 * Python: `cryptography` y `requests` (ya vienen con Odoo).
 * Salida HTTPS del servidor Odoo hacia el `auth_url` y el `api_url` de SAEKO.
 
