@@ -67,4 +67,4 @@ recurso, detalle por ID, cron por programación, importación de credenciales y 
 
 ## Licencia
 
-LGPL-3 · ANFEPI
+LGPL-3 · ARGIL
