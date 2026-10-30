@@ -168,4 +168,4 @@ en [`saeko_connector/doc/ANALISIS_API.md`](saeko_connector/doc/ANALISIS_API.md).
 
 ## Licencia
 
-[LGPL-3](https://www.gnu.org/licenses/lgpl-3.0) · © ARGIL CONSULTING · [anfepi.com](https://www.argil.mx)
+[LGPL-3](https://www.gnu.org/licenses/lgpl-3.0) · © ARGIL CONSULTING · [argil.mx](https://www.argil.mx)
