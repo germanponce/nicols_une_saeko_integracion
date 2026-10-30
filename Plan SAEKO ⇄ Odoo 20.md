@@ -34,7 +34,11 @@ Dos cambios de Odoo 20 tocan directamente este proyecto: la seguridad se reescri
 | Nómina: tablero de avisos previos, simulador neto a bruto y localizaciones reajustadas | Validar que la nómina mexicana de Enterprise esté disponible en 20 durante el análisis (Fase 1) | Reportado |
 | Nuevo esquema de licencia *Light User* para empleados sin acceso completo (contrato Enterprise v13) | Los profesores que solo registren asistencia podrían caer en este esquema; revisar costos con Odoo | Reportado |
 
-Fuentes: Lanzamiento Odoo 20.0 en [GitHub](https://github.com/odoo/odoo/tree/20.0) (`odoo/release.py`, `ir_access.py`, `hr_time_rule.py`, `rpc/controllers`); [OEC.sh: Odoo 20 released](https://oec.sh/blog/odoo-20-released-what-we-see); [Webkul: guía de migración a Odoo 20](https://webkul.com/blog/odoo-20-migration-guide/amp/).
+Fuentes:&#32;
+
+- Lanzamiento Odoo 20.0 en [GitHub](https://github.com/odoo/odoo/tree/20.0) (`odoo/release.py`, `ir_access.py`, `h``r_time_rule.py`, `rpc/controllers`)
+- &#32;[OEC.sh: Odoo 20 released](https://oec.sh/blog/odoo-20-released-what-we-see)
+- [Webkul: guía de migración a Odoo 20](https://webkul.com/blog/odoo-20-migration-guide/amp/).
 
 ## Fases de desarrollo e implementación
 
@@ -130,4 +134,4 @@ El proyecto se estima entre 160 y 200 horas. Los precios los completa el área d
 | 6. Pruebas y salida a producción | 20–24 |  |  |
 | **Total** | **160–200** |  |  |
 
-Incluye desarrollo y consultoría; no incluye licencias de Odoo Enterprise ni hospedaje.
+Incluye desarrollo y consultoría, no incluye licencias de Odoo Enterprise ni hospedaje.
